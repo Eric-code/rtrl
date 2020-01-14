@@ -5,6 +5,7 @@ import gym
 from rtrl.wrappers import Float64ToFloat32, TimeLimitResetWrapper, NormalizeActionWrapper, RealTimeWrapper, \
   TupleObservationWrapper, AffineObservationWrapper, AffineRewardWrapper, PreviousActionWrapper
 import numpy as np
+from rtrl.test import MadrlEnv
 
 
 def mujoco_py_issue_424_workaround():
@@ -38,9 +39,25 @@ class Env(gym.Wrapper):
     return observation
 
 
+class RootEnv(Env):
+  def __init__(self, seed_val=0, real_time: bool = False):
+    env = MadrlEnv()
+    print(env, type(env), type(env.action_space))
+    env = Float64ToFloat32(env)
+    env = TimeLimitResetWrapper(env)
+    assert isinstance(env.action_space, gym.spaces.Box)
+    env = NormalizeActionWrapper(env)
+    if real_time:
+      env = RealTimeWrapper(env)
+    else:
+      env = TupleObservationWrapper(env)
+    super().__init__(env)
+
+
 class GymEnv(Env):
   def __init__(self, seed_val=0, id: str = "Pendulum-v0", real_time: bool = False):
     env = gym.make(id)
+    print(env, type(env), type(env.action_space))
     env = Float64ToFloat32(env)
     env = TimeLimitResetWrapper(env)
     assert isinstance(env.action_space, gym.spaces.Box)

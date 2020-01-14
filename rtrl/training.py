@@ -9,12 +9,12 @@ from pandas import DataFrame, Timestamp
 from rtrl.testing import Test
 from rtrl.util import pandas_dict, cached_property
 from rtrl.wrappers import StatsWrapper
-from rtrl.envs import GymEnv
+from rtrl.envs import GymEnv, RootEnv
 
 
 @dataclass(eq=0)
 class Training:
-  Env: type = GymEnv
+  Env: type = RootEnv
   Test: type = Test
   Agent: type = rtrl.sac.Agent
   epochs: int = 10
