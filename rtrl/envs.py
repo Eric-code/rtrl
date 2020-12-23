@@ -44,13 +44,13 @@ class RootEnv(Env):
     env = MadrlEnv()
     print(env, type(env), type(env.action_space))
     env = Float64ToFloat32(env)
-    env = TimeLimitResetWrapper(env)
+    # env = TimeLimitResetWrapper(env)
     assert isinstance(env.action_space, gym.spaces.Box)
     env = NormalizeActionWrapper(env)
     if real_time:
       env = RealTimeWrapper(env)
     else:
-      env = TupleObservationWrapper(env)
+      env = PreviousActionWrapper(env)
     super().__init__(env)
 
 

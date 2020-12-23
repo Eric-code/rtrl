@@ -14,7 +14,7 @@ from rtrl.envs import GymEnv, RootEnv
 
 @dataclass(eq=0)
 class Training:
-  Env: type = RootEnv
+  Env: type = RootEnv  # GymEnv
   Test: type = Test
   Agent: type = rtrl.sac.Agent
   epochs: int = 10

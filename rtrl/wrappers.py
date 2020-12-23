@@ -7,9 +7,9 @@ import numpy as np
 class RealTimeWrapper(gym.Wrapper):
   def __init__(self, env):
     super().__init__(env)
-    self.observation_space = gym.spaces.Tuple((env.observation_space, env.action_space))
+    self.observation_space = gym.spaces.Tuple((env.observation_space, env.action_space))  # 新的状态空间包括原来的观测空间和动作空间
     # self.initial_action = env.action_space.sample()
-    assert isinstance(env.action_space, gym.spaces.Box)
+    assert isinstance(env.action_space, gym.spaces.Box)  # 动作空间必须是连续的
     self.initial_action = env.action_space.high * 0
 
   def reset(self):
@@ -19,7 +19,7 @@ class RealTimeWrapper(gym.Wrapper):
   def step(self, action):
     observation, reward, done, info = super().step(self.previous_action)
     self.previous_action = action
-    return (observation, action), reward, done, info
+    return (observation, action), reward, done, info  # 返回的状态信息包括观测和动作
 
 
 class PreviousActionWrapper(gym.Wrapper):
