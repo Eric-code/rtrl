@@ -122,7 +122,7 @@ if __name__ == "__main__":
     Training,
     epochs=3,
     rounds=5,
-    steps=500,
+    steps=100,
     Agent=partial(Agent, device='cpu', memory_size=1000000, start_training=256, batchsize=4),
     Env=partial(real_time=True),
   )

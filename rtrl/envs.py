@@ -6,6 +6,7 @@ from rtrl.wrappers import Float64ToFloat32, TimeLimitResetWrapper, NormalizeActi
   TupleObservationWrapper, AffineObservationWrapper, AffineRewardWrapper, PreviousActionWrapper
 import numpy as np
 from rtrl.test import MadrlEnv
+import datetime
 
 
 def mujoco_py_issue_424_workaround():
@@ -42,7 +43,7 @@ class Env(gym.Wrapper):
 class RootEnv(Env):
   def __init__(self, seed_val=0, real_time: bool = False):
     env = MadrlEnv()
-    print(env, type(env), type(env.action_space))
+    print(datetime.datetime.now(), type(env), type(env.action_space))
     env = Float64ToFloat32(env)
     # env = TimeLimitResetWrapper(env)
     assert isinstance(env.action_space, gym.spaces.Box)
