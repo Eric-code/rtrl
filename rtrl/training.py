@@ -2,6 +2,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 
 import pandas as pd
+import numpy as np
 
 import rtrl.sac
 from pandas import DataFrame, Timestamp
@@ -22,13 +23,15 @@ class Training:
   steps: int = 2000  # number of steps per round
   stats_window: int = None  # default = steps, should be at least as long as a single episode
   seed: int = 0  # seed is currently not used
+  num_agents: int = 3
 
   def __post_init__(self):
     self.epoch = 0
     with self.Env() as env:
       # print("Environment:", self.env)
       # noinspection PyArgumentList
-      self.agent = self.Agent(env.observation_space, env.action_space)
+      # self.agent = self.Agent(env.observation_space, env.action_space)
+      self.agents = [self.Agent(env.observation_space, env.action_space) for _ in range(self.num_agents)]
 
   def run_epoch(self):
     stats = []
@@ -46,22 +49,23 @@ class Training:
     stats_training = []
 
     # test runs in parallel to the training process
-    test = self.Test(
-      Env=self.Env,
-      actor=self.agent.model,
-      steps=self.stats_window or self.steps,
-      base_seed=self.seed+self.epochs
-    )
+    # test = self.Test(
+    #   Env=self.Env,
+    #   actor=self.agent.model,
+    #   steps=self.stats_window or self.steps,
+    #   base_seed=self.seed+self.epochs
+    # )
 
     for step in range(self.steps):
-      action, training_stats = self.agent.act(*env.transition, train=True)
-      stats_training += training_stats
-      env.step(action)
+        for index in range(self.num_agents):
+            action, training_stats = self.agents[index].act(*env.transition, train=True)
+            stats_training += training_stats
+            env.step(action)
 
     return pandas_dict(
       **env.stats(),
       round_time=Timestamp.utcnow() - t0,
-      **test.stats().add_suffix("_test"),  # this blocks until the tests have finished
-      round_time_total=Timestamp.utcnow() - t0,
+      # **test.stats().add_suffix("_test"),  # this blocks until the tests have finished
+      # round_time_total=Timestamp.utcnow() - t0,
       **DataFrame(stats_training).mean(skipna=True)
     )
