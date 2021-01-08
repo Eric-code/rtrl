@@ -31,7 +31,6 @@ class Env(gym.Wrapper):
     return self.observation(self.env.reset())
 
   def step(self, action):
-    print("this is step")
     next_state, reward, done, info = self.env.step(action)
     next_state = self.reset() if done else self.observation(next_state)
     self.transition = next_state, reward, done, info
